@@ -1642,16 +1642,39 @@ const FC_STATUS={LEARNING:'learning',NEEDS_REVISION:'needs_revision',MEMORIZED:'
 const TARGET_MARKS=100;
 const THEME_KEY='gate2028_theme_v1';
 
-// STATE
-let state=loadState(),cur=state.users[0]?.id||null,filter='all',expanded=null,selColor=COLORS[0],notesSubj=S[0].id;
+// STATE & PROFILES
+let globalMeta = GateTrackerStorage.loadCache().profiles || GateTrackerStorage.getJSON('gate_global_meta', { profiles: [], activeProfileId: null });
+if (!globalMeta.profiles || !globalMeta.profiles.length) {
+  const defaultUser = { id: uid(), name: 'Aryan', color: '#e8a838', target: TARGET_MARKS, mood: null, moodDate: null };
+  globalMeta.profiles = [defaultUser];
+  globalMeta.activeProfileId = defaultUser.id;
+  GateTrackerStorage.setJSON('gate_global_meta', globalMeta);
+}
+
+let state = {
+  users: globalMeta.profiles,
+  ...loadUserState()
+};
+
+let cur = GateTrackerStorage.getCurrentProfileId() || globalMeta.activeProfileId;
+if (!cur || !state.users.some(u => u.id === cur)) {
+  cur = state.users[0].id;
+  GateTrackerStorage.switchUser(cur);
+}
+
+function saveGlobalMeta() {
+  const meta = { profiles: state.users, activeProfileId: cur };
+  GateTrackerStorage.setJSON('gate_global_meta', meta);
+}
+
+let filter='all',expanded=null,selColor=COLORS[0],notesSubj=S[0].id;
 let notesMode='notes',flashFilter='all',flashTopic=null,flashCardIdx=0,flashFlipped=false;
 let activeRevSubj = S[0].id, activeRevTab = 'strategy';
 const FLASH_DECK_CACHE={};
+
 function normalizeState(s){
-  const fallback={users:[{id:uid(),name:'Aryan',color:'#e8a838',target:TARGET_MARKS,mood:null,moodDate:null}],progress:{},streaks:{},notes:{},revision:{}};
+  const fallback={progress:{},streaks:{},notes:{},revision:{}};
   if(!s||typeof s!=='object')s=fallback;
-  if(!Array.isArray(s.users)||!s.users.length)s.users=fallback.users;
-  s.users=s.users.map((u,i)=>({id:u?.id||uid(),name:u?.name||`User ${i+1}`,color:u?.color||COLORS[i%COLORS.length],target:TARGET_MARKS,mood:u?.mood??null,moodDate:u?.moodDate??null}));
   s.progress=(s.progress&&typeof s.progress==='object')?s.progress:{};
   s.streaks=(s.streaks&&typeof s.streaks==='object')?s.streaks:{};
   s.notes=(s.notes&&typeof s.notes==='object')?s.notes:{};
@@ -1663,7 +1686,14 @@ function normalizeState(s){
   s.flashcards.mode=(s.flashcards.mode==='flashcards')?'flashcards':'notes';
   return s;
 }
-function loadState(){try{const r=window.GateTrackerStorage?GateTrackerStorage.getItem('gate2028_v4'):localStorage.getItem('gate2028_v4');if(r)return normalizeState(JSON.parse(r));}catch(e){}return normalizeState(null);}
+
+function loadUserState(){
+  try {
+    const r = window.GateTrackerStorage ? GateTrackerStorage.getItem('gate2028_v4') : localStorage.getItem('gate2028_v4');
+    if (r) return normalizeState(JSON.parse(r));
+  } catch(e) {}
+  return normalizeState(null);
+}
 
 let isSaving = false;
 let saveTimeout = null;
@@ -1678,9 +1708,20 @@ async function performSave() {
     const fcMeta = coreState.flashcards;
     delete coreState.flashcards;
 
-    // Core state small string
-    if(window.GateTrackerStorage) GateTrackerStorage.setItem('gate2028_v4', JSON.stringify(coreState));
-    else localStorage.setItem('gate2028_v4', JSON.stringify(coreState));
+    // User progress state (tracked)
+    const userProgress = {
+      progress: coreState.progress,
+      streaks: coreState.streaks,
+      notes: coreState.notes,
+      revision: coreState.revision,
+      // flashcards deleted above
+    };
+
+    if(window.GateTrackerStorage) GateTrackerStorage.setItem('gate2028_v4', JSON.stringify(userProgress));
+    else localStorage.setItem('gate2028_v4', JSON.stringify(userProgress));
+
+    // Global meta (not tracked, local only)
+    saveGlobalMeta();
 
     // Heavy dictionary elements to IDB
     if (fcMeta) await IDB.put('quiz_sessions', { session_id: 'flashcards_meta', data: fcMeta });
@@ -1746,10 +1787,16 @@ function toggleTheme(){const next=document.body.getAttribute('data-theme')==='li
 
 function render(){renderHeader();renderUsers();renderStats();renderRing();renderSubjects();renderMarksMap();renderMoods();renderLB();renderStreak();renderUpcoming();renderQuote();renderRevision();renderNotesTabs();renderNotesEditor();renderSyllabus();}
 
-window.addEventListener('gate-storage-updated', () => {
+window.addEventListener('gate-storage-updated', (e) => {
   try {
-    state = loadState();
-    if (!state.users.some(u => u.id === cur)) cur = state.users[0]?.id || cur;
+    const nextUserState = loadUserState();
+    state = { ...state, ...nextUserState };
+    cur = GateTrackerStorage.getCurrentProfileId() || cur;
+    // If it was a profile switch, we might need to refresh the user list from meta too
+    if (e.detail && e.detail.source === 'profile-switch') {
+      const meta = GateTrackerStorage.getJSON('gate_global_meta', { profiles: state.users });
+      state.users = meta.profiles || state.users;
+    }
     notesMode = state.flashcards?.mode || notesMode;
     render();
     if (typeof renderPlanner === 'function') renderPlanner();
@@ -1761,7 +1808,7 @@ window.addEventListener('gate-storage-updated', () => {
 
 function renderHeader(){const n=new Date(),DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],hDay=document.getElementById('hDay'),hDate=document.getElementById('hDate');if(hDay)hDay.textContent=DAYS[n.getDay()];if(hDate)hDate.textContent=`${n.getDate()} ${MO[n.getMonth()]} ${n.getFullYear()}`;renderThemeToggle();}
 
-function renderUsers(){const b=document.getElementById('usersBar');if(!b)return;b.innerHTML='';state.users.forEach(u=>{const t=document.createElement('div');t.className='user-tab'+(u.id===cur?' active':'');t.innerHTML=`<div class="user-avatar" style="background:${u.color}22;color:${u.color};border:1.5px solid ${u.color}44">${u.name[0].toUpperCase()}</div><span>${u.name}</span>`;t.onclick=()=>{cur=u.id;render();};b.appendChild(t);});const a=document.createElement('button');a.className='add-user-btn';a.textContent='+ Add friend';a.onclick=openModal;b.appendChild(a);}
+function renderUsers(){const b=document.getElementById('usersBar');if(!b)return;b.innerHTML='';state.users.forEach(u=>{const t=document.createElement('div');t.className='user-tab'+(u.id===cur?' active':'');t.innerHTML=`<div class="user-avatar" style="background:${u.color}22;color:${u.color};border:1.5px solid ${u.color}44">${u.name[0].toUpperCase()}</div><span>${u.name}</span>`;t.onclick=()=>{if(u.id===cur)return;cur=u.id;GateTrackerStorage.switchUser(cur);/* Local state will refresh via event listener */};b.appendChild(t);});const a=document.createElement('button');a.className='add-user-btn';a.textContent='+ Add friend';a.onclick=openModal;b.appendChild(a);}
 
 function renderStats(){const o=getOverall(cur),dc=S.filter(s=>getP(cur,s.id).pct===100).length,sk=getStreak(cur),dl=Math.ceil((new Date('2028-02-01')-new Date())/86400000),u=state.users.find(x=>x.id===cur);document.getElementById('statsRow').innerHTML=[{i:'📈',n:o+'%',l:'Overall'},{i:'✅',n:dc+'/'+S.length,l:'Done'},{i:'🔥',n:sk,l:'Streak'},{i:'⏳',n:dl,l:'Days left'}].map(x=>`<div class="stat"><span class="stat-icon">${x.i}</span><div class="stat-num">${x.n}</div><div class="stat-label">${x.l}</div></div>`).join('');}
 
@@ -2628,7 +2675,7 @@ function switchQuizTab(id,btn){
 function openModal(){document.getElementById('addModal').classList.add('open');document.getElementById('newName').value='';document.getElementById('newTarget').value=TARGET_MARKS;selColor=COLORS[0];document.getElementById('colorOpts').innerHTML=COLORS.map(c=>`<div class="color-opt${c===selColor?' selected':''}" style="background:${c}" onclick="selectColor('${c}')"></div>`).join('');}
 function closeModal(){document.getElementById('addModal').classList.remove('open');}
 function selectColor(c){selColor=c;document.querySelectorAll('.color-opt').forEach(e=>e.classList.toggle('selected',e.style.background===c||e.style.backgroundColor===c));}
-function createUser(){const n=document.getElementById('newName').value.trim();if(!n){toast('Enter a name first 👆');return;}const u={id:uid(),name:n,color:selColor,target:TARGET_MARKS,mood:null,moodDate:null};state.users.push(u);cur=u.id;save();closeModal();render();toast('Welcome, '+n+'! 🎉');}
+function createUser(){const n=document.getElementById('newName').value.trim();if(!n){toast('Enter a name first 👆');return;}const u={id:uid(),name:n,color:selColor,target:TARGET_MARKS,mood:null,moodDate:null};state.users.push(u);saveGlobalMeta();cur=u.id;GateTrackerStorage.switchUser(cur);closeModal();render();toast('Welcome, '+n+'! 🎉');}
 
 // HELPERS
 function ds(d){return d.toISOString().slice(0,10);}

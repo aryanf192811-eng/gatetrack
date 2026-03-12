@@ -43,21 +43,28 @@
       if (!client) return null;
 
       try {
+        const userId = options.getUserId();
+        const profileId = options.getProfileId();
+        if (!userId || !profileId) return null;
+
         const { data, error } = await client
           .from('user_progress')
-          .select('user_id, progress, updated_at')
-          .eq('user_id', options.getUserId())
+          .select('user_id, data, updated_at')
+          .eq('user_id', userId)
           .maybeSingle();
 
         if (error) throw error;
-        if (!data || !data.progress) return null;
+        if (!data || !data.data || !data.data.profiles) return null;
+
+        const profileProgress = data.data.profiles[profileId];
+        if (!profileProgress) return null;
 
         const localCache = options.loadCache();
         const localTime = Date.parse(localCache.updated_at || 0) || 0;
         const cloudTime = Date.parse(data.updated_at || 0) || 0;
 
         if (cloudTime > localTime) {
-          options.onRemoteProgress(data.progress, data.updated_at);
+          options.onRemoteProgress(profileProgress, data.updated_at);
           return data;
         }
       } catch (error) {
@@ -76,10 +83,27 @@
 
       state.isSyncing = true;
       try {
+        const userId = options.getUserId();
+        const profileId = options.getProfileId();
+        if (!userId || !profileId) return false;
+
         const cache = options.loadCache();
+        
+        // 1. Fetch current cloud state to merge profiles
+        const { data: cloudRow } = await client
+          .from('user_progress')
+          .select('data')
+          .eq('user_id', userId)
+          .maybeSingle();
+
+        const profiles = (cloudRow && cloudRow.data && cloudRow.data.profiles) || {};
+        
+        // 2. Merge local profile progress into cloud profiles map
+        profiles[profileId] = cache.progress;
+
         const payload = {
-          user_id: options.getUserId(),
-          progress: cache.progress,
+          user_id: userId,
+          data: { profiles },
           updated_at: cache.updated_at || new Date().toISOString()
         };
 

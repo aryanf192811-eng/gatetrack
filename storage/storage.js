@@ -12,7 +12,8 @@
   const originalSetItem = storageProto.setItem;
   const originalRemoveItem = storageProto.removeItem;
 
-  const GATE_USER_ID_KEY = 'gateUserId';
+  const GLOBAL_META_KEY = 'gate_global_meta';
+  const PROFILE_PROGRESS_PREFIX = 'gate_progress_';
   const TRACKED_KEYS = [
     'gate2028_v4',
     'gate_exam_date',
@@ -30,8 +31,9 @@
   const state = {
     initialized: false,
     engine: null,
-    userId: null,
-    config: null
+    activeProfileId: null,
+    config: null,
+    supabaseUser: null
   };
 
   function nowIso() {
@@ -50,17 +52,35 @@
     }
   }
 
-  function generateUserId() {
-    if (global.currentUser && global.currentUser.id) {
-      return String(global.currentUser.id);
+  function getProfileKey(profileId) {
+    return PROFILE_PROGRESS_PREFIX + (profileId || state.activeProfileId);
+  }
+
+  function loadGlobalMeta() {
+    const raw = nativeStorage.getItem(GLOBAL_META_KEY);
+    const fallback = { profiles: [], activeProfileId: null };
+    if (!raw) return fallback;
+    try {
+      return JSON.parse(raw);
+    } catch (e) {
+      return fallback;
     }
+  }
 
-    const existing = nativeStorage.getItem(GATE_USER_ID_KEY);
-    if (existing) return existing;
+  function saveGlobalMeta(meta) {
+    nativeStorage.setItem(GLOBAL_META_KEY, JSON.stringify(meta));
+  }
 
-    const next = 'gate-user-' + Math.random().toString(36).slice(2, 10);
-    nativeStorage.setItem(GATE_USER_ID_KEY, next);
-    return next;
+  function getSupabaseUserId() {
+    // If we have a supabase client and it's authenticated, use that UID
+    if (global.supabaseClient && global.supabaseClient.auth) {
+      const { data } = global.supabaseClient.auth.getSession() || {};
+      if (data?.session?.user?.id) return data.session.user.id;
+    }
+    // Fallback for RLS - if not logged in, we can't really sync with RLS=auth.uid()
+    // but the app identifies by session if anon or similar. 
+    // For this PWA, we assume the user might be anon or logged in.
+    return 'authenticated-user'; // Placeholder if RLS is strict, usually you'd get from session
   }
 
   function readLegacySnapshot() {
@@ -133,7 +153,8 @@
         legacy: legacy
       },
       updated_at: updatedAt || current.updated_at || nowIso(),
-      user_id: state.userId || current.user_id || null
+      user_id: getSupabaseUserId(), // Cloud identity
+      profile_id: state.activeProfileId // Local profile partition
     });
   }
 
@@ -234,40 +255,68 @@
   function init(customConfig) {
     if (state.initialized) return api;
 
-    state.userId = generateUserId();
+    const meta = loadGlobalMeta();
+    state.activeProfileId = meta.activeProfileId;
     state.config = createConfig(customConfig);
 
-    let cache = cacheApi.loadCache();
-    const legacy = readLegacySnapshot();
-    const hasCacheLegacy = Object.keys(cache.progress.legacy || {}).length > 0;
-    const hasLocalLegacy = Object.keys(legacy).length > 0;
-
-    if (!hasCacheLegacy && hasLocalLegacy) {
-      cache = mergeLegacyIntoCache(cache, legacy, cache.updated_at || nowIso());
-      cacheApi.saveCache(cache);
-    } else {
-      cache.user_id = state.userId;
-      cacheApi.saveCache(cache);
+    // Initial load for the active profile
+    if (state.activeProfileId) {
+      loadProfileDataIntoLocalStorage(state.activeProfileId);
     }
 
-    hydrateLegacyToLocal(cache, 'bootstrap');
     patchLocalStorage();
+    startSync();
+
+    state.initialized = true;
+    return api;
+  }
+
+  function loadProfileDataIntoLocalStorage(profileId) {
+    const raw = nativeStorage.getItem(getProfileKey(profileId));
+    if (!raw) return;
+    try {
+      const data = JSON.parse(raw);
+      if (data && typeof data === 'object') {
+        Object.keys(data).forEach(key => {
+          if (isTrackedKey(key)) nativeStorage.setItem(key, data[key]);
+        });
+      }
+    } catch (e) {}
+  }
+
+  function saveLocalStorageIntoProfileData(profileId) {
+    const data = {};
+    TRACKED_KEYS.forEach(key => {
+      const val = nativeStorage.getItem(key);
+      if (val !== null) data[key] = val;
+    });
+    nativeStorage.setItem(getProfileKey(profileId), JSON.stringify(data));
+  }
+
+  function startSync() {
+    if (state.engine) {
+      state.engine.stop();
+    }
 
     state.engine = syncFactory.createEngine({
       supabaseUrl: state.config.supabaseUrl,
       supabaseAnonKey: state.config.supabaseAnonKey,
       intervalMs: state.config.intervalMs,
       initialPullDelayMs: state.config.initialPullDelayMs,
-      getUserId: () => state.userId,
+      getUserId: getSupabaseUserId,
+      getProfileId: () => state.activeProfileId,
       loadCache: cacheApi.loadCache,
       onRemoteProgress: (progress, updatedAt) => {
+        // progress here is the profile-specific progress from the cloud 'profiles' map
         const remoteCache = cacheApi.normalizeCache({
           progress: progress,
           updated_at: updatedAt,
-          user_id: state.userId
+          user_id: getSupabaseUserId()
         });
         cacheApi.saveCache(remoteCache);
         hydrateLegacyToLocal(remoteCache, 'cloud');
+        // Also update the profile-specific storage key
+        saveLocalStorageIntoProfileData(state.activeProfileId);
       },
       onError: (error) => {
         console.warn('GateTracker sync deferred:', error);
@@ -275,8 +324,41 @@
     });
 
     state.engine.start();
-    state.initialized = true;
-    return api;
+  }
+
+  function switchUser(newProfileId) {
+    if (!newProfileId || newProfileId === state.activeProfileId) return;
+    
+    console.log(`GateTracker: Switching profile from ${state.activeProfileId} to ${newProfileId}`);
+    
+    // 1. Save current progress to current profile key before leaving
+    if (state.activeProfileId) {
+      saveLocalStorageIntoProfileData(state.activeProfileId);
+    }
+
+    // 2. Clear current tracked keys and cache to prepare for fresh load
+    TRACKED_KEYS.forEach(key => nativeStorage.removeItem(key));
+    nativeStorage.removeItem(cacheApi.CACHE_KEY);
+
+    // 3. Update active profile in state and meta
+    state.activeProfileId = newProfileId;
+    const meta = loadGlobalMeta();
+    meta.activeProfileId = newProfileId;
+    saveGlobalMeta(meta);
+
+    // 4. Load new profile data into localStorage
+    loadProfileDataIntoLocalStorage(newProfileId);
+
+    // 5. Restart sync for new user/profile context
+    if (state.initialized) {
+      startSync();
+      state.engine.syncWithCloud(true);
+    }
+
+    // 6. Notify UI
+    global.dispatchEvent(new CustomEvent('gate-storage-updated', {
+      detail: { source: 'profile-switch', profileId: newProfileId }
+    }));
   }
 
   function getItem(key) {
@@ -326,7 +408,9 @@
     setJSON,
     removeItem,
     syncNow,
-    getCurrentUserId: () => state.userId || generateUserId()
+    switchUser,
+    getCurrentProfileId: () => state.activeProfileId,
+    getCurrentUserId: getSupabaseUserId
   };
 
   global.GateTrackerStorage = api;
