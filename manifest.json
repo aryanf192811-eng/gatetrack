@@ -1,7 +1,8 @@
 {
+  "id": "gate-2028-tracker",
   "name": "GATE 2028 Tracker",
   "short_name": "GATE 2028",
-  "description": "Progress tracker and revision tool for GATE 2028 CSE aspirants.",
+  "description": "Premium progress tracker and revision tool for GATE 2028 CSE aspirants.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -12,12 +13,22 @@
     {
       "src": "/icons/icon-192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
       "src": "/icons/icon-512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Open Quiz",
+      "url": "/?tab=quiz",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

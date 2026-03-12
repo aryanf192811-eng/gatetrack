@@ -3,6 +3,9 @@ const CACHE_NAME = "gate-tracker-v5";
 const urlsToCache = [
   "/",
   "/index.html",
+  "/manifest.json",
+  "/icons/icon-192.png",
+  "/icons/icon-512.png",
   "/widget.html",
   "/storage/cache.js",
   "/storage/syncEngine.js",
@@ -35,10 +38,8 @@ self.addEventListener("fetch", event => {
   if (url.origin !== self.location.origin) return;
 
   if (
-    url.pathname === "/manifest.json" ||
     url.pathname === "/sw.js" ||
-    url.pathname === "/favicon.ico" ||
-    url.pathname.startsWith("/icons/")
+    url.pathname === "/favicon.ico"
   ) {
     return;
   }
