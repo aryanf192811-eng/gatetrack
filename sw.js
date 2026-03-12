@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gate-tracker-v3';
+const CACHE_NAME = 'gate-tracker-v4';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -9,74 +9,97 @@ const urlsToCache = [
   '/data/data.js',
   '/data/pyq_intelligence.js',
   '/data/dataset_v6_pyq_quiz.js',
-  '/data/dataset_examside.js',
-  '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png'
+  '/data/dataset_examside.js'
 ];
 
 self.addEventListener('install', event => {
-  self.skipWaiting(); // Bypass waiting to immediately install new worker
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(urlsToCache);
-      })
+    caches.open(CACHE_NAME).then(cache =>
+      Promise.all(
+        urlsToCache.map(url => cache.add(url).catch(() => null))
+      )
+    )
   );
 });
 
 self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
   const url = new URL(event.request.url);
+
+  if (url.origin !== self.location.origin) {
+    return;
+  }
 
   if (
     url.pathname === '/manifest.json' ||
     url.pathname === '/sw.js' ||
+    url.pathname === '/favicon.ico' ||
     url.pathname.startsWith('/icons/')
   ) {
     return;
   }
 
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match('/index.html'))
+    );
+    return;
+  }
+
+  if (url.pathname.startsWith('/data/')) {
+    event.respondWith(
+      caches.match(event.request).then(cached => {
+        const fetchPromise = fetch(event.request)
+          .then(networkResponse => {
+            if (networkResponse && networkResponse.ok) {
+              caches.open(CACHE_NAME).then(cache => {
+                cache.put(event.request, networkResponse.clone());
+              });
+            }
+            return networkResponse;
+          })
+          .catch(() => cached);
+
+        return cached || fetchPromise;
+      })
+    );
+    return;
+  }
+
   event.respondWith(
     fetch(event.request)
-      .then(response => {
-        // Check if we received a valid response
-        if(!response || response.status !== 200 || response.type !== 'basic') {
-          return response;
-        }
-        var responseToCache = response.clone();
-        caches.open(CACHE_NAME)
-          .then(function(cache) {
-            cache.put(event.request, responseToCache);
+      .then(networkResponse => {
+        if (networkResponse && networkResponse.ok) {
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, networkResponse.clone());
           });
-        return response;
+        }
+        return networkResponse;
       })
-      .catch(() => {
-        // If network fails, try to return from cache
-        return caches.match(event.request);
-      })
+      .catch(() => caches.match(event.request))
   );
 });
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
+    caches.keys().then(cacheNames =>
+      Promise.all(
         cacheNames.map(cacheName => {
           if (cacheName !== CACHE_NAME) {
             return caches.delete(cacheName);
           }
+          return null;
         })
-      );
-    }).then(() => {
-      // Immediately take control of all open pages
-      return self.clients.claim();
-    })
+      )
+    ).then(() => self.clients.claim())
   );
 });
 
-// TASK 3 — Weekly Digest: Background Sync trigger
-// When supported, fires weekly-digest to prompt the main thread to generate a digest.
-// Falls back gracefully to the DOMContentLoaded check in index.html if not supported.
+// TASK 3 - Weekly Digest: Background Sync trigger
 self.addEventListener('periodicsync', event => {
   if (event.tag === 'weekly-digest') {
     event.waitUntil(
