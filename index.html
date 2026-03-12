@@ -2831,6 +2831,7 @@ async function renderMistakesReview() {
   let con=0, cal=0, tim=0, mis=0, fml=0;
 
   const list = document.getElementById('mistakesReviewList');
+  if (!list) return;
   if (mistakes.length === 0) {
     list.innerHTML = '<div class="fc-empty">No mistakes logged yet. Practice more to gather data!</div>';
   } else {
