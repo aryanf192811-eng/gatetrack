@@ -3464,7 +3464,7 @@ function initPyqModule() {
 // SERVICE WORKER REGISTRATION (PWA)
 if('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
+    navigator.serviceWorker.register('/sw.js', { scope: '/' })
       .then(reg => console.log('ServiceWorker registered:', reg.scope))
       .catch(err => console.log('ServiceWorker registration failed:', err));
   });
@@ -4886,7 +4886,7 @@ function renderRadar() {
 
 if('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
+    navigator.serviceWorker.register('/sw.js', { scope: '/' })
       .then(reg => console.log('ServiceWorker registered:', reg.scope))
       .catch(err => console.log('ServiceWorker registration failed:', err));
   });

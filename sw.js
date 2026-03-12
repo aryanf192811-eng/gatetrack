@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gate2028-cache-v17';
+const CACHE_NAME = 'gate-tracker-v2';
 const urlsToCache = [
   '/',
   '/index.html',
