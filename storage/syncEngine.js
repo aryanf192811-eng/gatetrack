@@ -16,6 +16,10 @@
 
     function getSupabaseClient() {
       if (state.supabaseClient) return state.supabaseClient;
+      if (global.supabaseClient) {
+        state.supabaseClient = global.supabaseClient;
+        return state.supabaseClient;
+      }
 
       const config = getSupabaseConfig();
       if (!config.url || !config.anonKey) return null;

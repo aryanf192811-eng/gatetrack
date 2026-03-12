@@ -7,6 +7,7 @@ const urlsToCache = [
   "/icons/icon-192.png",
   "/icons/icon-512.png",
   "/widget.html",
+  "/storage/supabaseClient.js",
   "/storage/cache.js",
   "/storage/syncEngine.js",
   "/storage/storage.js",
