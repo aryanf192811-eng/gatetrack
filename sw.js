@@ -1,4 +1,4 @@
-const CACHE_NAME = "gate-tracker-v4";
+const CACHE_NAME = "gate-tracker-v5";
 
 const urlsToCache = [
   "/",
@@ -13,31 +13,27 @@ const urlsToCache = [
   "/data/dataset_examside.js"
 ];
 
+function canCache(response) {
+  return Boolean(response && response.ok && (response.type === "basic" || response.type === "cors"));
+}
 
-// INSTALL
 self.addEventListener("install", event => {
   self.skipWaiting();
 
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache =>
-      Promise.all(
-        urlsToCache.map(url => cache.add(url).catch(() => null))
-      )
+      Promise.all(urlsToCache.map(url => cache.add(url).catch(() => null)))
     )
   );
 });
 
-
-// FETCH
 self.addEventListener("fetch", event => {
-
   if (event.request.method !== "GET") return;
 
   const url = new URL(event.request.url);
 
   if (url.origin !== self.location.origin) return;
 
-  // NEVER intercept critical PWA files
   if (
     url.pathname === "/manifest.json" ||
     url.pathname === "/sw.js" ||
@@ -47,112 +43,88 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  // Navigation requests (SPA fallback)
   if (event.request.mode === "navigate") {
     event.respondWith(
-      fetch(event.request).catch(() => caches.match("/index.html"))
-    );
-    return;
-  }
-
-  // Dataset caching strategy (stale-while-revalidate)
-  if (url.pathname.startsWith("/data/")) {
-
-    event.respondWith(
-      caches.match(event.request).then(cached => {
-
-        const networkFetch = fetch(event.request)
-          .then(networkResponse => {
-
-            if (networkResponse && networkResponse.ok) {
-
-              caches.open(CACHE_NAME).then(cache => {
-                cache.put(event.request, networkResponse.clone());
-              });
-
-            }
-
-            return networkResponse;
-
-          })
-          .catch(() => cached);
-
-        return cached || networkFetch;
-
+      fetch(event.request).catch(async () => {
+        return (await caches.match("/index.html")) || Response.error();
       })
     );
-
     return;
   }
 
-  // Default network-first strategy
+  if (url.pathname.startsWith("/data/")) {
+    event.respondWith(
+      (async () => {
+        const cache = await caches.open(CACHE_NAME);
+        const cached = await cache.match(event.request);
+
+        const refresh = fetch(event.request)
+          .then(networkResponse => {
+            if (canCache(networkResponse)) {
+              const cachedResponse = networkResponse.clone();
+              event.waitUntil(cache.put(event.request, cachedResponse));
+            }
+            return networkResponse;
+          })
+          .catch(() => null);
+
+        if (cached) {
+          event.waitUntil(refresh.then(() => null));
+          return cached;
+        }
+
+        return refresh.then(response => response || Response.error());
+      })()
+    );
+    return;
+  }
+
   event.respondWith(
-    fetch(event.request)
-      .then(networkResponse => {
+    (async () => {
+      const cache = await caches.open(CACHE_NAME);
 
-        if (networkResponse && networkResponse.ok) {
+      try {
+        const networkResponse = await fetch(event.request);
 
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, networkResponse.clone());
-          });
-
+        if (canCache(networkResponse)) {
+          const cachedResponse = networkResponse.clone();
+          event.waitUntil(cache.put(event.request, cachedResponse));
         }
 
         return networkResponse;
-
-      })
-      .catch(() => caches.match(event.request))
+      } catch (error) {
+        const cached = await cache.match(event.request);
+        return cached || Response.error();
+      }
+    })()
   );
-
 });
 
-
-// ACTIVATE
 self.addEventListener("activate", event => {
-
   event.waitUntil(
-
-    caches.keys().then(cacheNames =>
-      Promise.all(
-        cacheNames.map(cacheName => {
-
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-
-        })
+    caches.keys()
+      .then(cacheNames =>
+        Promise.all(
+          cacheNames.map(cacheName => {
+            if (cacheName !== CACHE_NAME) {
+              return caches.delete(cacheName);
+            }
+            return null;
+          })
+        )
       )
-    )
-
+      .then(() => self.clients.claim())
   );
-
-  self.clients.claim();
-
 });
 
-
-// Weekly Digest Background Sync
 self.addEventListener("periodicsync", event => {
-
   if (event.tag === "weekly-digest") {
-
     event.waitUntil(
-
-      self.clients.matchAll({
-        type: "window",
-        includeUncontrolled: true
-      }).then(clients => {
-
+      self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(clients => {
         clients.forEach(client => {
-          client.postMessage({
-            type: "TRIGGER_DIGEST"
-          });
+          client.postMessage({ type: "TRIGGER_DIGEST" });
         });
-
       })
-
     );
-
   }
-
 });
