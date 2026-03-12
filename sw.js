@@ -138,14 +138,18 @@ self.addEventListener("periodicsync", event => {
 
     event.waitUntil(
 
-      self.clients.matchAll({ type: "window", includeUncontrolled: true })
-        .then(clients => {
+      self.clients.matchAll({
+        type: "window",
+        includeUncontrolled: true
+      }).then(clients => {
 
-          clients.forEach(client =>
-            client.postMessage({ type: "TRIGGER_DIGEST" })
-          );
+        clients.forEach(client => {
+          client.postMessage({
+            type: "TRIGGER_DIGEST"
+          });
+        });
 
-        })
+      })
 
     );
 

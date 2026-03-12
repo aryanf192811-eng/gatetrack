@@ -1,0 +1,10 @@
+{
+  "routes": [
+    { "src": "/manifest.json", "dest": "/manifest.json" },
+    { "src": "/sw.js", "dest": "/sw.js" },
+    { "src": "/icons/(.*)", "dest": "/icons/$1" },
+    { "src": "/data/(.*)", "dest": "/data/$1" },
+    { "src": "/storage/(.*)", "dest": "/storage/$1" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}
