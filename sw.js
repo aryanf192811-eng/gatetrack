@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gate-tracker-v2';
+const CACHE_NAME = 'gate-tracker-v3';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -26,6 +26,16 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('fetch', event => {
+  const url = new URL(event.request.url);
+
+  if (
+    url.pathname === '/manifest.json' ||
+    url.pathname === '/sw.js' ||
+    url.pathname.startsWith('/icons/')
+  ) {
+    return;
+  }
+
   event.respondWith(
     fetch(event.request)
       .then(response => {

@@ -1400,7 +1400,7 @@ body[data-theme='light']::after{background:radial-gradient(ellipse,var(--tracker
         <div style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:32px;padding:0 20px;">
           Practice un-timed DPPs, Mock Questions, and PYQs. Get instant feedback and track concepts immediately into the Mistake Intelligence system.
         </div>
-        
+
         <div style="text-align:left;margin-bottom:8px;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Subject Focus</div>
         <select id="pracSubjSelect" onchange="renderPracTopics()" style="width:100%;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:14px;margin-bottom:20px;outline:none;cursor:pointer;appearance:none;background-image:url('data:image/svg+xml;utf8,<svg fill=%22%23a0aabf%22 height=%2224%22 viewBox=%220 0 24 24%22 width=%2224%22 xmlns=%22http://www.w3.org/2000/svg%22><path d=%22M7 10l5 5 5-5z%22/><path d=%22M0 0h24v24H0z%22 fill=%22none%22/></svg>');background-repeat:no-repeat;background-position:calc(100% - 10px) center;">
           <option value="ALL">Mix All Subjects</option>
@@ -1421,14 +1421,14 @@ body[data-theme='light']::after{background:radial-gradient(ellipse,var(--tracker
         <select id="pracTopicSelect" style="width:100%;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:14px;margin-bottom:20px;outline:none;cursor:pointer;appearance:none;background-image:url('data:image/svg+xml;utf8,<svg fill=%22%23a0aabf%22 height=%2224%22 viewBox=%220 0 24 24%22 width=%2224%22 xmlns=%22http://www.w3.org/2000/svg%22><path d=%22M7 10l5 5 5-5z%22/><path d=%22M0 0h24v24H0z%22 fill=%22none%22/></svg>');background-repeat:no-repeat;background-position:calc(100% - 10px) center;">
           <option value="ALL">All Topics</option>
         </select>
-        
+
         <div style="text-align:left;margin-bottom:8px;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Material Source</div>
         <select id="pracSourceSelect" style="width:100%;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:14px;margin-bottom:32px;outline:none;cursor:pointer;appearance:none;background-image:url('data:image/svg+xml;utf8,<svg fill=%22%23a0aabf%22 height=%2224%22 viewBox=%220 0 24 24%22 width=%2224%22 xmlns=%22http://www.w3.org/2000/svg%22><path d=%22M7 10l5 5 5-5z%22/><path d=%22M0 0h24v24H0z%22 fill=%22none%22/></svg>');background-repeat:no-repeat;background-position:calc(100% - 10px) center;">
           <option value="ALL">Everything (PYQs + DPPs + Tests)</option>
           <option value="PYQ">Previous Year Questions Only</option>
           <option value="DPP">Practice Modules (DPP) Only</option>
         </select>
-        
+
         <button onclick="startTargetedPractice()" style="width:100%;padding:16px;font-size:16px;font-weight:600;background:linear-gradient(135deg, rgba(240,192,96,0.1), rgba(240,192,96,0.05));color:var(--amber);border:1px solid rgba(240,192,96,0.3);border-radius:8px;cursor:pointer;transition:all 0.2s;">Start Practice Session</button>
       </div>
     </div>
@@ -1441,12 +1441,12 @@ body[data-theme='light']::after{background:radial-gradient(ellipse,var(--tracker
         <div style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:32px;padding:0 20px;">
           180 Minutes. 65 Questions. Real GATE interface. Strict offline simulation tracking your errors.
         </div>
-        
+
         <div style="text-align:left;margin-bottom:12px;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Select Paper</div>
         <select id="simYearSelect" style="width:100%;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:14px;margin-bottom:32px;outline:none;cursor:pointer;appearance:none;background-image:url('data:image/svg+xml;utf8,<svg fill=%22%23a0aabf%22 height=%2224%22 viewBox=%220 0 24 24%22 width=%2224%22 xmlns=%22http://www.w3.org/2000/svg%22><path d=%22M7 10l5 5 5-5z%22/><path d=%22M0 0h24v24H0z%22 fill=%22none%22/></svg>');background-repeat:no-repeat;background-position:calc(100% - 10px) center;">
           <option value="ALL">GATE CSE Full Syllabus (65 Qs)</option>
         </select>
-        
+
         <button onclick="startSimulatorYear(document.getElementById('simYearSelect').value)" style="width:100%;padding:16px;font-size:16px;font-weight:600;background:linear-gradient(135deg, rgba(240,192,96,0.1), rgba(240,192,96,0.05));color:var(--amber);border:1px solid rgba(240,192,96,0.3);border-radius:8px;cursor:pointer;transition:all 0.2s;">Start Examination</button>
       </div>
     </div>
@@ -1490,11 +1490,11 @@ body[data-theme='light']::after{background:radial-gradient(ellipse,var(--tracker
               <div style="font-size:11px;color:var(--muted);margin-top:2px;">GATE 2028 Aspirant</div>
             </div>
           </div>
-          
+
           <div class="ex-timer-box">
              <div class="ex-timer" id="ex-timer">180:00</div>
           </div>
-          
+
           <div class="ex-palette">
             <div style="font-weight:600;font-size:14px;color:var(--cream);margin-bottom:8px;font-family:'Lora',serif;">Question Palette</div>
             <div class="ep-legend">
@@ -1505,7 +1505,7 @@ body[data-theme='light']::after{background:radial-gradient(ellipse,var(--tracker
             </div>
             <div class="ex-palette-grid" id="ex-palette-grid"></div>
           </div>
-          
+
           <div style="padding:16px;border-top:1px solid var(--border2);background:rgba(255,255,255,0.01);">
               <button class="btn btn-ghost" style="width:100%;background:var(--red-dim);color:var(--red);border-color:rgba(239,122,134,0.3);padding:12px;font-size:13px;font-weight:600;letter-spacing:0.5px;" onclick="submitExam()">Submit Exam</button>
           </div>
@@ -1994,7 +1994,7 @@ function renderRevision(){
     return`
       <div class="rev-card">
         <div class="rev-card-name">
-          ${s.icon} ${s.name} 
+          ${s.icon} ${s.name}
           <span style="font-size:11px;color:var(--muted);margin-left:auto;font-family:'DM Sans',sans-serif;font-weight:600;">~${s.marks}m · ${doneCount}/${checks.length}</span>
         </div>
         <div class="rev-checks">
@@ -3041,7 +3041,7 @@ function renderExQuestion() {
 
 function selectSimOption(labelEl, type, qid) {
   const inputEl = labelEl.querySelector('input');
-  
+
   const allOpts = labelEl.parentElement.querySelectorAll('.ex-opt');
   if (type === 'MCQ') {
     allOpts.forEach(l => {
@@ -3054,14 +3054,14 @@ function selectSimOption(labelEl, type, qid) {
   } else if (type === 'MSQ') {
     labelEl.classList.toggle('selected');
     inputEl.checked = !inputEl.checked;
-    
+
     if(!Array.isArray(simState.answers[qid])) simState.answers[qid] = [];
     const arr = simState.answers[qid];
     if(inputEl.checked) {
        if(!arr.includes(inputEl.value)) arr.push(inputEl.value);
-    } else { 
-       const idx = arr.indexOf(inputEl.value); 
-       if(idx>-1) arr.splice(idx,1); 
+    } else {
+       const idx = arr.indexOf(inputEl.value);
+       if(idx>-1) arr.splice(idx,1);
     }
   }
 }
@@ -3254,7 +3254,7 @@ async function startTargetedPractice() {
   document.getElementById('ex-result').style.display = 'none';
   const exRunning = document.getElementById('ex-running');
   exRunning.style.display = 'block';
-  
+
   // Customise header
   document.getElementById('ex-title').textContent = `Practice Session`;
   document.getElementById('ex-sec').innerHTML = `<span style="color:var(--amber)">${source}</span> • ${subj === 'ALL' ? 'Mixed' : subj}`;
@@ -3327,7 +3327,7 @@ function renderPracticeQuestion() {
 function selectPracticeOption(labelEl, type) {
   const inputEl = labelEl.querySelector('input');
   if (inputEl.disabled) return;
-  
+
   const allOpts = labelEl.parentElement.querySelectorAll('.ex-opt');
   if (type === 'MCQ') {
     allOpts.forEach(l => {
@@ -3351,14 +3351,14 @@ function checkPracticeAnswer() {
   if (qType === 'MCQ') {
     const sel = document.querySelector('input[name="pracopt"]:checked');
     if (!sel) return toast("Select an option first.");
-    
+
     // Evaluate based on option index (A, B, C, D)
     const allOpts = Array.from(document.querySelectorAll('input[name="pracopt"]'));
     const selIdx = allOpts.indexOf(sel);
     const selLetter = String.fromCharCode(65 + selIdx); // 0 -> 'A', 1 -> 'B'
-    
+
     isCorrect = (selLetter === q.answer || sel.value === q.answer);
-    
+
     optsList.querySelectorAll('.ex-opt').forEach((l, idx) => {
       const letter = String.fromCharCode(65 + idx);
       const val = l.querySelector('input').value;
@@ -3420,7 +3420,7 @@ function endPracticeSession() {
   pracState.active = false;
   document.getElementById('ex-running').style.display = 'none';
   const exRes = document.getElementById('ex-result');
-  
+
   // Re-enable timer & palette for Simulator when Practice is done
   document.querySelector('.ex-timer-box').style.display = 'block';
   document.querySelector('.ex-palette').style.display = 'flex';
@@ -3434,7 +3434,7 @@ function endPracticeSession() {
 
   // Restore ex-actions to simulator standard layout
   const actionsWrap = document.querySelector('.ex-actions');
-  actionsWrap.innerHTML = 
+  actionsWrap.innerHTML =
     '<div style="display:flex; gap:12px;">' +
       '<button class="btn btn-ghost" onclick="exMarkReview()">Mark for Review & Next</button>' +
       '<button class="btn btn-ghost" onclick="exClearResp()">Clear Response</button>' +
@@ -3444,7 +3444,7 @@ function endPracticeSession() {
     '</div>';
 
   exRes.style.display = 'block';
-  exRes.innerHTML = 
+  exRes.innerHTML =
     '<div style="text-align:center;">' +
        '<div style="font-family:\'Lora\',serif;font-size:20px;color:var(--muted);margin-bottom:6px;">Practice Session Ended</div>' +
        '<div style="font-size:52px;font-weight:800;color:var(--amber);font-family:\'Lora\',serif;">' + pracState.score + ' / ' + pracState.questions.length + '</div>' +
@@ -4817,7 +4817,7 @@ function checkDailyLectureReminder() {
     const isOverdue = todayLecs.some(l => new Date(l.date).setHours(0,0,0,0) < new Date().setHours(0,0,0,0));
     const titleText = isOverdue ? 'missed / overdue lectures' : 'lectures scheduled today';
     const titles = todayLecs.slice(0, 3).map(l => l.topic || l.subject).join(', ') + (todayLecs.length > 3 ? '...' : '');
-    
+
     setTimeout(() => {
       const modalHtml = `
         <div id="lectureReminderModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(5px);animation:fadeUp 0.3s ease;">
@@ -4831,7 +4831,7 @@ function checkDailyLectureReminder() {
             <p style="font-size:12px;color:var(--muted);margin-bottom:24px;">Did you complete them?</p>
             <div style="display:flex;gap:12px;">
               <button onclick="document.getElementById('lectureReminderModal').remove(); localStorage.setItem('gate_daily_check_v2', '${todayStr}'); toast('No problem, they are placed in your backlog.'); setTimeout(syncPlannerWithSubjects, 100); renderSubjects();" style="flex:1;padding:12px;border:1px solid var(--border2);border-radius:12px;background:transparent;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;transition:all .2s;">Not yet</button>
-              
+
               <button onclick="document.getElementById('lectureReminderModal').remove(); const done=JSON.parse(localStorage.getItem('${PLANNER_DONE_KEY}')||'[]'); ${JSON.stringify(todayLecs.map(l=>l.id))}.forEach(id=>{if(!done.includes(id))done.push(id);}); localStorage.setItem('${PLANNER_DONE_KEY}', JSON.stringify(done)); localStorage.setItem('gate_daily_check_v2', '${todayStr}'); toast('Awesome! Marked as done 🚀'); syncPlannerWithSubjects(); renderPlanner(); renderSubjects(); renderUpcoming();" style="flex:1;padding:12px;border:none;border-radius:12px;background:var(--green);color:#0f1d18;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:700;transition:all .2s;box-shadow:0 8px 16px rgba(66,201,150,0.2);">Yes, done ✓</button>
             </div>
           </div>
@@ -4848,10 +4848,10 @@ setTimeout(checkDailyLectureReminder, 1000);
 function renderRadar() {
   const content = document.getElementById('radar-content');
   if (!content) return;
-  
+
   const highYield = PYQ_INTELLIGENCE.high_yield_ranked || [];
   const topYield = highYield.slice(0, 15);
-  
+
   content.innerHTML = `
     <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:16px; margin-top:20px;">
       ${topYield.map((item, idx) => `
