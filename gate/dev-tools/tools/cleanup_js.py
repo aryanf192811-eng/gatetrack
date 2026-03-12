@@ -2,7 +2,7 @@
 import re, sys
 from pathlib import Path
 
-DEFAULT_DATA_JS = Path(__file__).resolve().parents[2] / "public" / "data" / "data.js"
+DEFAULT_DATA_JS = Path(__file__).resolve().parents[2] / "data" / "data.js"
 
 path = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_DATA_JS
 text = path.read_text(encoding="utf-8", errors="ignore")

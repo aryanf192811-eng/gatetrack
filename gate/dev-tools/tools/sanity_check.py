@@ -1,7 +1,7 @@
 import re, json
 from pathlib import Path
 
-DEFAULT_DATA_JS = Path(__file__).resolve().parents[2] / "public" / "data" / "data.js"
+DEFAULT_DATA_JS = Path(__file__).resolve().parents[2] / "data" / "data.js"
 
 text = DEFAULT_DATA_JS.read_text(encoding='utf-8', errors='ignore')
 

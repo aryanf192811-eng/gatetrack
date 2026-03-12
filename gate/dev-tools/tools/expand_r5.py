@@ -3,7 +3,7 @@
 import json, re, sys
 from pathlib import Path
 
-DEFAULT_DATA_JS = Path(__file__).resolve().parents[2] / "public" / "data" / "data.js"
+DEFAULT_DATA_JS = Path(__file__).resolve().parents[2] / "data" / "data.js"
 
 TOC_R5 = [
   {"id":"cfg_ambiguity","name":"Ambiguous CFGs","topic":"Formal Languages","definition":"CFG is ambiguous if some string has ≥2 distinct parse trees (different derivations).","intuition":"Grammar has a bend in grammar rules letting the same string be parsed multiple ways.","formula":"No algorithm to check if a CFG is ambiguous — undecidable in general.","difficulty":"hard","importance":7,"exam_trick":"Inherently ambiguous CFL: no unambiguous grammar exists for it (e.g., aⁿbⁿcˢ ∪ aˢbⁿcⁿ).","common_mistake":"Ambiguous grammar ≠ ambiguous language. An ambiguous grammar may describe an unambiguous language.","pyq_insight":"GATE: show given string has two parse trees → grammar is ambiguous.","relations":[{"to":"cfl","type":"part_of"}]},

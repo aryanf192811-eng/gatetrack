@@ -3,7 +3,7 @@
 :: Opens the widget as a standalone app window (no browser chrome)
 :: Positioned at top-right corner of the screen
 
-for %%I in ("%~dp0..\..\public\widget.html") do SET WIDGET_PATH=%%~fI
+for %%I in ("%~dp0..\..\widget.html") do SET WIDGET_PATH=%%~fI
 SET FILE_URL=file:///%WIDGET_PATH:\=/%
 
 :: Try Microsoft Edge first (best PWA support)
@@ -27,5 +27,5 @@ IF %ERRORLEVEL% EQU 0 (
     GOTO :EOF
 )
 
-echo No compatible browser found. Please open public\widget.html manually.
+echo No compatible browser found. Please open widget.html manually.
 pause

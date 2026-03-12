@@ -6,7 +6,7 @@ Run: python tools/fix_concepts.py data.js
 import json, re, sys
 from pathlib import Path
 
-DEFAULT_DATA_JS = Path(__file__).resolve().parents[2] / "public" / "data" / "data.js"
+DEFAULT_DATA_JS = Path(__file__).resolve().parents[2] / "data" / "data.js"
 
 def fix(data_js_path: Path):
     text = data_js_path.read_text(encoding="utf-8", errors="ignore")

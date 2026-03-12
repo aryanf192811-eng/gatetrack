@@ -4,8 +4,8 @@ This folder contains non-deployable development assets moved out of the Vercel s
 
 Key paths:
 
-- Runtime site: `../public`
-- Runtime datasets: `../public/data`
+- Runtime site: `..`
+- Runtime datasets: `../data`
 - Source PDFs: `./gate pyq`, `./source-material/gateopedia 13.pdf`
 - OCR cache: `./ocr_cache`
 - Scrapers: `./scraper`
@@ -28,4 +28,4 @@ python .\dev-tools\tools\cleanup_js.py
 python .\dev-tools\tools\sanity_check.py
 ```
 
-`generate_flashcards.py` still requires explicit `--pdf`, `--out`, `--start`, and `--end` arguments. Use `.\dev-tools\source-material\gateopedia 13.pdf` as the PDF input and `.\public\data\data.js` as the output dataset target.
+`generate_flashcards.py` still requires explicit `--pdf`, `--out`, `--start`, and `--end` arguments. Use `.\dev-tools\source-material\gateopedia 13.pdf` as the PDF input and `.\data\data.js` as the output dataset target.

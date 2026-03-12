@@ -12,7 +12,7 @@ from collections import defaultdict
 DEV_TOOLS_DIR = Path(__file__).resolve().parents[1]
 PROJECT_ROOT = DEV_TOOLS_DIR.parent
 DEFAULT_PYQ_DIR = DEV_TOOLS_DIR / "gate pyq"
-DEFAULT_OUTPUT = PROJECT_ROOT / "public" / "data" / "pyq_intelligence.js"
+DEFAULT_OUTPUT = PROJECT_ROOT / "data" / "pyq_intelligence.js"
 
 # ─── Try to import PDF library ───────────────────────────────────────────────
 try:

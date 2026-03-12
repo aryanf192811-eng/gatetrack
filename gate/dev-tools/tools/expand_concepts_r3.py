@@ -7,7 +7,7 @@ Run: python tools/expand_concepts_r3.py data.js
 import json, re, sys
 from pathlib import Path
 
-DEFAULT_DATA_JS = Path(__file__).resolve().parents[2] / "public" / "data" / "data.js"
+DEFAULT_DATA_JS = Path(__file__).resolve().parents[2] / "data" / "data.js"
 
 DL_CONCEPTS = [
   {"id":"hazards_dl","name":"Hazards in Combinational Circuits","topic":"Circuit Design","definition":"Unwanted transient output glitches caused by unequal propagation delays.","intuition":"Two paths to same output with different speeds — one arrives before the other causing a glitch.","formula":"Static-1 hazard: output should stay 1 but glitches 0. Fix: add consensus terms in K-map.","difficulty":"hard","importance":7,"exam_trick":"Add redundant prime implicant covering transition between two groups in K-map to eliminate hazard.","common_mistake":"Hazards exist only in COMBINATIONAL circuits. Sequential circuits handle this with clocking.","pyq_insight":"GATE: identify hazard in circuit; apply K-map fix.","relations":[{"to":"kmap","type":"depends_on"}]},

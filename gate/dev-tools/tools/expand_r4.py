@@ -3,7 +3,7 @@
 import json, re, sys
 from pathlib import Path
 
-DEFAULT_DATA_JS = Path(__file__).resolve().parents[2] / "public" / "data" / "data.js"
+DEFAULT_DATA_JS = Path(__file__).resolve().parents[2] / "data" / "data.js"
 
 OS_R4 = [
   {"id":"fork_exec","name":"fork() & exec()","topic":"Process Management","definition":"fork(): duplicates calling process. exec(): replaces process image with new program.","intuition":"fork = photocopy the process; exec = tear out the copy's pages and paste a new book.","formula":"After fork: parent gets child PID, child gets 0. Both see same code after fork().","difficulty":"medium","importance":8,"exam_trick":"fork() followed by exec() is how shells launch programs.","common_mistake":"After fork(), BOTH parent and child continue executing from the SAME point.","pyq_insight":"GATE: n nested fork() calls creates 2^n - 1 new processes total.","relations":[]},

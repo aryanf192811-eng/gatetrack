@@ -3,7 +3,7 @@ Set objFSO = CreateObject("Scripting.FileSystemObject")
 
 ' Get the directory where the VBS script is located
 scriptDir = objFSO.GetParentFolderName(WScript.ScriptFullName)
-widgetHtmlPath = objFSO.BuildPath(objFSO.GetParentFolderName(objFSO.GetParentFolderName(scriptDir)), "public\widget.html")
+widgetHtmlPath = objFSO.BuildPath(objFSO.GetParentFolderName(objFSO.GetParentFolderName(scriptDir)), "widget.html")
 
 ' Ensure the path is properly formatted for a file:// URL
 fileUrl = "file:///" & Replace(widgetHtmlPath, "\", "/")

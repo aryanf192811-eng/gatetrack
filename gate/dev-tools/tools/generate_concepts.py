@@ -8,7 +8,7 @@ import json
 import re
 from pathlib import Path
 
-DEFAULT_DATA_JS = Path(__file__).resolve().parents[2] / "public" / "data" / "data.js"
+DEFAULT_DATA_JS = Path(__file__).resolve().parents[2] / "data" / "data.js"
 
 # ═══════════════════════════════════════════════════════════════════
 # CURATED GATE CONCEPT TAXONOMY

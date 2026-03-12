@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-INDEX_HTML = PROJECT_ROOT / 'public' / 'index.html'
+INDEX_HTML = PROJECT_ROOT / 'index.html'
 def remove_lines(file_path, start_line, end_line):
     with open(file_path, 'r', encoding='utf-8') as f:
         lines = f.readlines()

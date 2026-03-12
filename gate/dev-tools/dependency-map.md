@@ -2,25 +2,25 @@
 
 ## Runtime Files
 
-- `public/index.html`
-- `public/widget.html`
-- `public/sw.js`
-- `public/manifest.json`
-- `public/icons/icon-192.png`
-- `public/icons/icon-512.png`
-- `public/data/data.js`
-- `public/data/pyq_intelligence.js`
-- `public/data/dataset_v6_pyq_quiz.js`
-- `public/data/dataset_examside.js`
+- `index.html`
+- `widget.html`
+- `sw.js`
+- `manifest.json`
+- `icons/icon-192.png`
+- `icons/icon-512.png`
+- `data/data.js`
+- `data/pyq_intelligence.js`
+- `data/dataset_v6_pyq_quiz.js`
+- `data/dataset_examside.js`
 
 ## Dataset Files
 
-- `public/data/data.js`
-- `public/data/data_flashcards_v2.js`
-- `public/data/data_flashcards_v3.js`
-- `public/data/dataset_examside.js`
-- `public/data/dataset_v6_pyq_quiz.js`
-- `public/data/pyq_intelligence.js`
+- `data/data.js`
+- `data/data_flashcards_v2.js`
+- `data/data_flashcards_v3.js`
+- `data/dataset_examside.js`
+- `data/dataset_v6_pyq_quiz.js`
+- `data/pyq_intelligence.js`
 - `dev-tools/source-material/dataset_examside_demo.js`
 
 ## Build And Maintenance Scripts
@@ -55,11 +55,11 @@
 
 ## Browser Dependency Edges
 
-- `public/index.html` -> `public/manifest.json`
-- `public/index.html` -> `public/icons/icon-192.png`
-- `public/index.html` -> `public/data/data.js`
-- `public/index.html` -> `public/data/pyq_intelligence.js`
-- `public/index.html` -> `public/data/dataset_v6_pyq_quiz.js`
-- `public/index.html` -> dynamic `public/data/dataset_examside.js`
-- `public/index.html` -> `public/sw.js`
-- `public/sw.js` -> cached runtime files under `public/`
+- `index.html` -> `manifest.json`
+- `index.html` -> `icons/icon-192.png`
+- `index.html` -> `data/data.js`
+- `index.html` -> `data/pyq_intelligence.js`
+- `index.html` -> `data/dataset_v6_pyq_quiz.js`
+- `index.html` -> dynamic `data/dataset_examside.js`
+- `index.html` -> `sw.js`
+- `sw.js` -> cached runtime files under repo root

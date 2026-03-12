@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const dataFile = path.join(__dirname, '..', '..', 'public', 'data', 'data.js');
+const dataFile = path.join(__dirname, '..', '..', 'data', 'data.js');
 
 try {
   let fileData = fs.readFileSync(dataFile, 'utf8');

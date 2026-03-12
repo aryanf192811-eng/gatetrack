@@ -7,7 +7,7 @@ Run: python tools/expand_concepts.py data.js
 import json, re, sys
 from pathlib import Path
 
-DEFAULT_DATA_JS = Path(__file__).resolve().parents[2] / "public" / "data" / "data.js"
+DEFAULT_DATA_JS = Path(__file__).resolve().parents[2] / "data" / "data.js"
 
 # Each entry: id, name, topic, definition, intuition, formula,
 #             difficulty, importance, exam_trick, common_mistake, pyq_insight
