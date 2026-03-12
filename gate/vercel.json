@@ -1,7 +1,12 @@
 {
   "cleanUrls": true,
-  "outputDirectory": "public",
   "routes": [
-    { "src": "/", "dest": "/index.html" }
+    { "src": "/data/(.*)", "dest": "/public/data/$1" },
+    { "src": "/storage/(.*)", "dest": "/public/storage/$1" },
+    { "src": "/icons/(.*)", "dest": "/public/icons/$1" },
+    { "src": "/manifest.json", "dest": "/public/manifest.json" },
+    { "src": "/sw.js", "dest": "/public/sw.js" },
+    { "src": "/widget(?:\\.html)?", "dest": "/public/widget.html" },
+    { "src": "/(.*)", "dest": "/public/index.html" }
   ]
 }
