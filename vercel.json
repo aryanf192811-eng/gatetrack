@@ -5,7 +5,9 @@
     { "src": "/icons/(.*)", "dest": "/icons/$1" },
     { "src": "/data/(.*)", "dest": "/data/$1" },
     { "src": "/storage/(.*)", "dest": "/storage/$1" },
+
     { "handle": "filesystem" },
+
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
