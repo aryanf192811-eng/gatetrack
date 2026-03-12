@@ -1,0 +1,22 @@
+{
+  "name": "GATE 2028 Tracker",
+  "short_name": "GATE 2028",
+  "description": "Progress tracker and revision tool for GATE 2028 CSE aspirants.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#0d1117",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=400,user-scalable=no">
+<title>GATE 2028 — Widget</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; }
+html, body { width:400px; min-height:100vh; overflow-x:hidden; font-family:'Inter',system-ui,sans-serif; }
+
+body {
+  background: linear-gradient(145deg, #e8f4fd 0%, #d4edda 40%, #e8f4fd 100%);
+  min-height:100vh;
+  padding: 16px 14px 20px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+/* ── HEADER ── */
+.hdr {
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 0 2px 4px;
+}
+.hdr-brand { display:flex; align-items:center; gap:8px; }
+.hdr-badge {
+  width:32px; height:32px; border-radius:10px;
+  background: linear-gradient(135deg,#2563eb,#0ea5e9);
+  display:flex; align-items:center; justify-content:center;
+  font-size:17px; box-shadow:0 2px 8px rgba(37,99,235,0.3);
+}
+.hdr-title { font-size:16px; font-weight:800; color:#1e293b; letter-spacing:-0.4px; }
+.hdr-right { display:flex; align-items:center; gap:6px; }
+.hdr-date { font-size:11px; color:#64748b; font-weight:500; }
+.w-refresh {
+  width:28px;height:28px;border-radius:8px; border:1px solid rgba(0,0,0,0.08);
+  background:#fff;color:#64748b;font-size:13px; cursor:pointer; display:flex;align-items:center;justify-content:center;
+  transition:all .15s; box-shadow:0 1px 3px rgba(0,0,0,0.08);
+}
+.w-refresh:hover { background:#2563eb; color:#fff; border-color:#2563eb; }
+
+/* ── CARD BASE ── */
+.card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 14px 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.04);
+}
+.card-lbl {
+  font-size: 10px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: #94a3b8; margin-bottom: 10px;
+  display:flex; align-items:center; gap:5px;
+}
+
+/* ── COUNTDOWN ── */
+.cd-grid {
+  display:grid; grid-template-columns:repeat(4,1fr); gap:8px;
+}
+.cd-cell {
+  background: linear-gradient(135deg,#eff6ff,#dbeafe);
+  border:1px solid rgba(37,99,235,0.12);
+  border-radius:12px; padding:10px 4px 8px; text-align:center;
+}
+.cd-num {
+  font-size:28px; font-weight:900; color:#1e40af;
+  line-height:1; letter-spacing:-1px; font-variant-numeric:tabular-nums;
+}
+.cd-unit {
+  font-size:9px; color:#93c5fd; text-transform:uppercase;
+  letter-spacing:0.8px; margin-top:3px; font-weight:700;
+}
+
+/* ── TODAY LECTURE (green gradient card) ── */
+.today-card {
+  background: linear-gradient(135deg, #059669 0%, #10b981 60%, #34d399 100%);
+  border-radius: 18px; padding:15px 16px; position:relative; overflow:hidden;
+  box-shadow: 0 4px 16px rgba(5,150,105,0.25);
+}
+.today-card::after {
+  content:''; position:absolute; top:-25px; right:-25px; width:80px; height:80px;
+  border-radius:50%; background:rgba(255,255,255,0.15);
+}
+.today-card::before {
+  content:''; position:absolute; bottom:-20px; left:-15px; width:70px; height:70px;
+  border-radius:50%; background:rgba(0,0,0,0.06);
+}
+.tcard-lbl {
+  font-size:9px; font-weight:800; letter-spacing:1.2px; text-transform:uppercase;
+  color:rgba(255,255,255,0.8); margin-bottom:7px; position:relative;
+}
+.tcard-topic {
+  font-size:15px; font-weight:800; color:#fff;
+  line-height:1.3; margin-bottom:5px; position:relative; letter-spacing:-0.2px;
+}
+.tcard-meta {
+  font-size:11px; color:rgba(255,255,255,0.8);
+  position:relative; display:flex; align-items:center; gap:8px;
+}
+.tcard-tag {
+  display:inline-flex; align-items:center;
+  background:rgba(255,255,255,0.2); border-radius:100px;
+  padding:2px 8px; font-size:9px; font-weight:800; color:#fff;
+  text-transform:uppercase; letter-spacing:0.5px;
+}
+.tcard-tag.overdue { background:rgba(239,68,68,0.6); }
+.tcard-done-btn {
+  position:absolute; top:15px; right:16px;
+  width:34px; height:34px; border-radius:50%;
+  background:rgba(255,255,255,0.2); border:2px solid rgba(255,255,255,0.6);
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  font-size:15px; font-weight:700; color:#fff; transition:all .2s;
+}
+.tcard-done-btn:hover { background:rgba(255,255,255,0.4); transform:scale(1.1); }
+.tcard-done-btn.done { background:#fff; color:#059669; border-color:#fff; }
+
+/* ── TWO COLS ── */
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+/* ── STAT CARDS ── */
+.stat-val { font-size:26px; font-weight:900; color:#1e293b; letter-spacing:-1px; line-height:1; }
+.stat-sub { font-size:10px; color:#94a3b8; margin-top:4px; font-weight:500; }
+.stat-bar-wrap {
+  height:5px; background:#f1f5f9; border-radius:3px; margin-top:10px; overflow:hidden;
+}
+.stat-bar { height:5px; border-radius:3px; transition:width 1s ease; }
+.stat-bar-blue  { background:linear-gradient(90deg,#3b82f6,#60a5fa); }
+.stat-bar-green { background:linear-gradient(90deg,#10b981,#34d399); }
+
+/* Pace pill */
+.pace-pill {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:3px 9px; border-radius:100px; font-size:10px; font-weight:700; margin-top:7px;
+}
+.pace-pill.ahead  { background:#dcfce7; color:#166534; }
+.pace-pill.track  { background:#fef9c3; color:#854d0e; }
+.pace-pill.behind { background:#fee2e2; color:#991b1b; }
+
+/* ── PHASE CARD ── */
+.phase-card {
+  background: linear-gradient(135deg,#eff6ff,#dbeafe);
+  border:1px solid rgba(37,99,235,0.15);
+  border-radius:18px; padding:14px 16px;
+}
+.phase-name { font-size:14px; font-weight:800; color:#1e40af; margin-bottom:2px; }
+.phase-info { font-size:10px; color:#60a5fa; margin-top:2px; }
+.phase-bar-w { height:5px; background:rgba(37,99,235,0.1); border-radius:3px; margin-top:10px; overflow:hidden; }
+.phase-bar   { height:5px; border-radius:3px; background:linear-gradient(90deg,#2563eb,#60a5fa); }
+
+/* ── UPCOMING ── */
+.up-row {
+  display:flex; align-items:flex-start; gap:9px;
+  padding:7px 0; border-bottom:1px solid #f1f5f9;
+}
+.up-row:last-child { border-bottom:none; padding-bottom:0; }
+.up-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:4px; }
+.up-text { font-size:12px; color:#334155; font-weight:500; flex:1; line-height:1.4; }
+.up-when {
+  font-size:10px; font-weight:600; padding:2px 8px; border-radius:100px;
+  background:#f1f5f9; color:#64748b; white-space:nowrap;
+}
+
+
+
+
+/* ── QUOTE ── */
+.q-card {
+  background: linear-gradient(135deg,#fff7ed,#fefce8);
+  border:1px solid rgba(234,179,8,0.2);
+  border-radius:18px; padding:14px 16px; text-align:center;
+}
+.q-mark { font-size:28px; color:rgba(234,179,8,0.4); font-family:Georgia,serif; display:block; line-height:0.8; margin-bottom:6px; }
+.q-text { font-size:12px; color:#78350f; font-style:italic; line-height:1.6; font-weight:500; }
+.q-by   { font-size:9px; color:#d97706; font-weight:800; letter-spacing:1.2px; text-transform:uppercase; margin-top:8px; }
+
+/* ── FOOTER ── */
+.footer {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 2px;
+}
+.f-sync { font-size:10px; color:#94a3b8; }
+.f-btn {
+  background:linear-gradient(135deg,#2563eb,#0ea5e9);
+  border:none; border-radius:8px; padding:5px 12px;
+  color:#fff; font-size:10px; font-weight:700; cursor:pointer;
+  font-family:inherit; box-shadow:0 2px 6px rgba(37,99,235,0.3);
+  transition:all .15s; letter-spacing:0.2px;
+}
+.f-btn:hover { opacity:0.9; transform:translateY(-1px); }
+
+.empty-msg { font-size:12px; color:#94a3b8; text-align:center; padding:8px 0; font-style:italic; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-brand">
+    <div class="hdr-badge">⚡</div>
+    <div class="hdr-title">GATE 2028</div>
+  </div>
+  <div class="hdr-right">
+    <span class="hdr-date" id="wDate"></span>
+    <button class="w-refresh" onclick="init()" title="Refresh">↻</button>
+  </div>
+</div>
+
+<!-- COUNTDOWN -->
+<div class="card">
+  <div class="card-lbl">⏳ Time Remaining</div>
+  <div class="cd-grid">
+    <div class="cd-cell"><div class="cd-num" id="wDays">--</div><div class="cd-unit">Days</div></div>
+    <div class="cd-cell"><div class="cd-num" id="wHrs">--</div><div class="cd-unit">Hrs</div></div>
+    <div class="cd-cell"><div class="cd-num" id="wMins">--</div><div class="cd-unit">Min</div></div>
+    <div class="cd-cell"><div class="cd-num" id="wSecs">--</div><div class="cd-unit">Sec</div></div>
+  </div>
+</div>
+
+<!-- TODAY LECTURE -->
+<div class="today-card" id="todayWrap">
+  <div class="tcard-lbl">📖 Today's Lecture</div>
+  <div id="todayContent">
+    <div class="tcard-topic" style="opacity:0.85;font-size:13px;font-weight:600;">No lecture plan loaded.</div>
+    <div class="tcard-meta">Open main app → Planner → Upload Photo</div>
+  </div>
+</div>
+
+<!-- STATS TWO-COL -->
+<div class="two-col">
+  <div class="card">
+    <div class="card-lbl">📚 Subjects</div>
+    <div class="stat-val" id="wSubjDone">0/13</div>
+    <div class="stat-sub">completed</div>
+    <div class="stat-bar-wrap"><div class="stat-bar stat-bar-blue" id="wSubjBar" style="width:0%;"></div></div>
+  </div>
+  <div class="card">
+    <div class="card-lbl">🎓 Lectures</div>
+    <div class="stat-val" id="wLecDone">0</div>
+    <div class="stat-sub" id="wLecSub">not started</div>
+    <div class="stat-bar-wrap"><div class="stat-bar stat-bar-green" id="wLecBar" style="width:0%;"></div></div>
+    <div id="wPaceChip"></div>
+  </div>
+</div>
+
+<!-- PHASE CARD -->
+<div class="phase-card" id="phaseWrap" style="display:none;">
+  <div class="card-lbl" style="margin-bottom:6px;">🗺 Current Phase</div>
+  <div class="phase-name" id="phaseName">—</div>
+  <div class="phase-info" id="phaseInfo">—</div>
+  <div class="phase-bar-w"><div class="phase-bar" id="phaseBar" style="width:0%;"></div></div>
+</div>
+
+<!-- UP NEXT -->
+<div class="card">
+  <div class="card-lbl">📌 Up Next</div>
+  <div id="wUpcoming"><div class="empty-msg">No upcoming lectures</div></div>
+</div>
+
+
+
+<!-- QUOTE -->
+<div class="q-card">
+  <span class="q-mark">"</span>
+  <div class="q-text" id="wQuote">Loading…</div>
+  <div class="q-by">— For the Grind</div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <span class="f-sync" id="wSync">Auto-synced from main app</span>
+  <button class="f-btn" onclick="if(window.opener){window.opener.focus();}else{alert('Main app not open.');}">Open App ↗</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="storage/cache.js"></script>
+<script src="storage/syncEngine.js"></script>
+<script src="storage/storage.js"></script>
+<script>
+// ─── KEYS (must match main app) ──────────────────────────────────
+const PLAN_KEY  = 'gate_lecture_plan_v1';
+const DONE_KEY  = 'gate_lecture_done_v1';
+const GDATE_KEY = 'gate_exam_date';
+const STATE_KEY = 'gate2028_v4';
+const SYNC_KEY  = 'gate_planner_sync_meta_v1';
+
+const QUOTES = [
+  'The rank list doesn\'t care how tired you were.',
+  'Small margin every day. Massive lead by exam day.',
+  'PYQs are the syllabus in disguise.',
+  'Confusion is the feeling of learning. Stay in it.',
+  'One concept fully understood beats ten topics skimmed.',
+  'Hard chapters are hard for everyone — that\'s your opportunity.',
+  'MSQ and NAT have no negative marking. Never leave them blank.',
+  'The gap closes one session at a time.',
+  'GATE is solvable. Focus on the design, not the fear.',
+  'Discipline on the unmotivated days is what separates you.',
+  'Every formula mastered is one less thing to panic about.',
+  'There is no shortcut. But the work is survivable — start.',
+  'Every hour now buys you calm on exam day.',
+  'There is a version of you in February who is sharp and ready. Build it.'
+];
+
+const $  = id => document.getElementById(id);
+const set = (id,v) => { const e=$(id); if(e) e.textContent=v; };
+const ds  = d => d.toISOString().split('T')[0];
+
+function getExamDate() {
+  const s = window.GateTrackerStorage ? GateTrackerStorage.getItem(GDATE_KEY) : localStorage.getItem(GDATE_KEY);
+  if (s) { const d=new Date(s); if(!isNaN(d)) return d; }
+  return new Date('2028-02-02T09:30:00');
+}
+function getPlan()  { try { const raw=window.GateTrackerStorage?GateTrackerStorage.getItem(PLAN_KEY):localStorage.getItem(PLAN_KEY); return JSON.parse(raw||'null'); } catch{return null;} }
+function getDone()  { try { const raw=window.GateTrackerStorage?GateTrackerStorage.getItem(DONE_KEY):localStorage.getItem(DONE_KEY); return JSON.parse(raw||'[]'); } catch{return [];} }
+function getState() { try { const raw=window.GateTrackerStorage?GateTrackerStorage.getItem(STATE_KEY):localStorage.getItem(STATE_KEY); return JSON.parse(raw||'null')||{}; } catch{return {};} }
+
+// ── Countdown ───────────────────────────────────────────────────
+function tickCd() {
+  const diff = getExamDate() - new Date();
+  if (diff<=0) { ['wDays','wHrs','wMins','wSecs'].forEach(id=>set(id,'0')); return; }
+  set('wDays',  Math.floor(diff/86400000));
+  set('wHrs',   String(Math.floor((diff%86400000)/3600000)).padStart(2,'0'));
+  set('wMins',  String(Math.floor((diff%3600000)/60000)).padStart(2,'0'));
+  set('wSecs',  String(Math.floor((diff%60000)/1000)).padStart(2,'0'));
+}
+
+// ── Today's Lecture ─────────────────────────────────────────────
+function renderToday() {
+  const plan=getPlan(), done=getDone(), el=$('todayContent');
+  if (!el||!plan||!plan.length) return;
+  const today=new Date(); today.setHours(0,0,0,0);
+  // Find first undone lecture at or past today
+  let lec=null;
+  for (const l of plan) {
+    if (done.includes(l.id)) continue;
+    const ld=new Date(l.date); ld.setHours(0,0,0,0);
+    if (isNaN(ld.getTime())||ld<=today) { lec=l; break; }
+    if (!lec) lec=l; // take nearest future if nothing past
+  }
+  if (!lec) { el.innerHTML='<div class="tcard-topic" style="opacity:0.85;">🎉 All lectures done!</div>'; return; }
+  const isDone=done.includes(lec.id);
+  const ld=new Date(lec.date); ld.setHours(0,0,0,0);
+  const dg=isNaN(ld.getTime())?0:Math.round((ld-today)/86400000);
+  const isToday=dg===0, isPast=dg<0;
+  const tagCls=isPast?'overdue':'', tagTxt=isPast?'OVERDUE':isToday?'TODAY':`IN ${dg}D`;
+  el.innerHTML=`
+    <button class="tcard-done-btn ${isDone?'done':''}" onclick="tog('${lec.id}')">${isDone?'✓':'○'}</button>
+    <div class="tcard-lbl" style="margin-bottom:5px;"><span class="tcard-tag ${tagCls}">${tagTxt}</span></div>
+    <div class="tcard-topic">${(lec.topic||'Lecture').slice(0,60)}</div>
+    <div class="tcard-meta">
+      <span>${lec.date||''}</span>
+      ${lec.subject?`<span style="font-size:9px;background:rgba(255,255,255,0.2);border-radius:100px;padding:2px 7px;">${lec.subject}</span>`:''}
+    </div>`;
+}
+function tog(id) {
+  const done=getDone(); const idx=done.indexOf(id);
+  if(idx===-1) done.push(id); else done.splice(idx,1);
+  if(window.GateTrackerStorage) GateTrackerStorage.setItem(DONE_KEY,JSON.stringify(done));
+  else localStorage.setItem(DONE_KEY,JSON.stringify(done));
+  renderToday(); renderProgress(); renderUpcoming();
+}
+
+// ── Progress ────────────────────────────────────────────────────
+function renderProgress() {
+  const plan=getPlan(), done=getDone();
+  if (plan) {
+    const total=plan.length, doneCnt=plan.filter(l=>done.includes(l.id)).length;
+    const pct=total?Math.round(doneCnt/total*100):0;
+    set('wLecDone',doneCnt); set('wLecSub',`of ${total} lectures`);
+    const lb=$('wLecBar'); if(lb) lb.style.width=pct+'%';
+    const today=new Date(); today.setHours(0,0,0,0);
+    let exp=0; plan.forEach(l=>{const d=new Date(l.date);d.setHours(0,0,0,0);if(!isNaN(d.getTime())&&d<=today)exp++;});
+    const gap=doneCnt-exp;
+    let cls,txt;
+    if(gap>=2){cls='ahead';txt=`↑ ${gap} ahead`;}
+    else if(gap<=-2){cls='behind';txt=`↓ ${Math.abs(gap)} behind`;}
+    else{cls='track';txt='✓ On track';}
+    const pc=$('wPaceChip'); if(pc) pc.innerHTML=`<span class="pace-pill ${cls}">${txt}</span>`;
+  }
+  const state=getState();
+  const TOTAL=13; let done2=0;
+  if(state.progress){ const u=Object.values(state.progress)[0]||{}; done2=Object.values(u).filter(p=>(p?.pct||0)>=100).length; }
+  set('wSubjDone',`${done2}/${TOTAL}`);
+  const sb=$('wSubjBar'); if(sb) sb.style.width=(done2/TOTAL*100)+'%';
+}
+
+// ── Phase ───────────────────────────────────────────────────────
+function renderPhase() {
+  const plan=getPlan(); const pw=$('phaseWrap'); if(!plan||!pw) return;
+  const phases={};
+  plan.forEach(l=>{ if(l.phase&&l.phase.trim()) { if(!phases[l.phase]) phases[l.phase]=[]; phases[l.phase].push(l); }});
+  if(!Object.keys(phases).length) return;
+  const done=getDone(); const today=new Date(); today.setHours(0,0,0,0);
+  for(const [ph,lecs] of Object.entries(phases)) {
+    const dates=lecs.map(l=>new Date(l.date)).filter(d=>!isNaN(d)).sort((a,b)=>a-b);
+    if(!dates.length) continue;
+    const first=dates[0],last=dates[dates.length-1];
+    if(first<=today&&today<=last||(!plan.some(l=>new Date(l.date)<=today)&&first>today)) {
+      pw.style.display='block';
+      set('phaseName',ph);
+      const doneCnt=lecs.filter(l=>done.includes(l.id)).length;
+      const pct=Math.round(doneCnt/lecs.length*100);
+      set('phaseInfo',`${doneCnt}/${lecs.length} done · ${pct}%`);
+      const pb=$('phaseBar'); if(pb) pb.style.width=pct+'%';
+      return;
+    }
+  }
+}
+
+// ── Upcoming ────────────────────────────────────────────────────
+function renderUpcoming() {
+  const el=$('wUpcoming'); if(!el) return;
+  const plan=getPlan(),done=getDone();
+  if(!plan){el.innerHTML='<div class="empty-msg">No plan loaded.</div>';return;}
+  const today=new Date();today.setHours(0,0,0,0);
+  const upcoming=plan.filter(l=>!done.includes(l.id)).slice(0,4);
+  if(!upcoming.length){el.innerHTML='<div style="font-size:12px;color:#166534;padding:4px;">🎉 All lectures complete!</div>';return;}
+  const colors=['#2563eb','#059669','#d97706','#dc2626','#7c3aed'];
+  el.innerHTML=upcoming.map((l,i)=>{
+    const ld=new Date(l.date);ld.setHours(0,0,0,0);
+    const dg=isNaN(ld.getTime())?null:Math.round((ld-today)/86400000);
+    const cls=dg===0?'tod':dg<0?'urg':'';
+    const wtxt=dg===null?'':dg===0?'Today':dg===1?'Tomorrow':dg<0?`${Math.abs(dg)}d ago`:`In ${dg}d`;
+    return `<div class="up-row">
+      <div class="up-dot" style="background:${colors[i%colors.length]};"></div>
+      <div class="up-text">${(l.topic||'').slice(0,45)}${(l.topic||'').length>45?'…':''}</div>
+      ${wtxt?`<span class="up-when ${cls}">${wtxt}</span>`:''}
+    </div>`;
+  }).join('');
+}
+
+
+
+// ── Quote + Date ─────────────────────────────────────────────────
+function renderDate(){
+  const now=new Date();
+  set('wDate',now.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'}));
+}
+function renderQuote(){
+  const el=$('wQuote');if(!el)return;
+  el.textContent=QUOTES[new Date().getDate()%QUOTES.length];
+}
+function renderSync(){
+  const el=$('wSync');
+  if(el)el.textContent='Synced '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+}
+
+// ── INIT ─────────────────────────────────────────────────────────
+function init(){
+  renderDate(); tickCd(); renderToday(); renderProgress();
+  renderPhase(); renderUpcoming(); renderQuote(); renderSync();
+}
+init();
+setInterval(tickCd,1000);
+setInterval(init,30000);
+window.addEventListener('gate-storage-updated', () => init());
+window.addEventListener('storage',e=>{
+  if([PLAN_KEY,DONE_KEY,GDATE_KEY,STATE_KEY].includes(e.key))init();
+});
+</script>
+</body>
+</html>
