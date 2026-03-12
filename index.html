@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GATE 2028 — CSE Tracker</title>
 <link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/icons/icon-192.png">
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
 <meta name="theme-color" content="#1a1510">
-<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Lora:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
 <script>
@@ -1756,9 +1757,9 @@ window.addEventListener('gate-storage-updated', () => {
   }
 });
 
-function renderHeader(){const n=new Date(),DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];document.getElementById('hDay').textContent=DAYS[n.getDay()];document.getElementById('hDate').textContent=`${n.getDate()} ${MO[n.getMonth()]} ${n.getFullYear()}`;renderThemeToggle();}
+function renderHeader(){const n=new Date(),DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],hDay=document.getElementById('hDay'),hDate=document.getElementById('hDate');if(hDay)hDay.textContent=DAYS[n.getDay()];if(hDate)hDate.textContent=`${n.getDate()} ${MO[n.getMonth()]} ${n.getFullYear()}`;renderThemeToggle();}
 
-function renderUsers(){const b=document.getElementById('usersBar');b.innerHTML='';state.users.forEach(u=>{const t=document.createElement('div');t.className='user-tab'+(u.id===cur?' active':'');t.innerHTML=`<div class="user-avatar" style="background:${u.color}22;color:${u.color};border:1.5px solid ${u.color}44">${u.name[0].toUpperCase()}</div><span>${u.name}</span>`;t.onclick=()=>{cur=u.id;render();};b.appendChild(t);});const a=document.createElement('button');a.className='add-user-btn';a.textContent='+ Add friend';a.onclick=openModal;b.appendChild(a);}
+function renderUsers(){const b=document.getElementById('usersBar');if(!b)return;b.innerHTML='';state.users.forEach(u=>{const t=document.createElement('div');t.className='user-tab'+(u.id===cur?' active':'');t.innerHTML=`<div class="user-avatar" style="background:${u.color}22;color:${u.color};border:1.5px solid ${u.color}44">${u.name[0].toUpperCase()}</div><span>${u.name}</span>`;t.onclick=()=>{cur=u.id;render();};b.appendChild(t);});const a=document.createElement('button');a.className='add-user-btn';a.textContent='+ Add friend';a.onclick=openModal;b.appendChild(a);}
 
 function renderStats(){const o=getOverall(cur),dc=S.filter(s=>getP(cur,s.id).pct===100).length,sk=getStreak(cur),dl=Math.ceil((new Date('2028-02-01')-new Date())/86400000),u=state.users.find(x=>x.id===cur);document.getElementById('statsRow').innerHTML=[{i:'📈',n:o+'%',l:'Overall'},{i:'✅',n:dc+'/'+S.length,l:'Done'},{i:'🔥',n:sk,l:'Streak'},{i:'⏳',n:dl,l:'Days left'}].map(x=>`<div class="stat"><span class="stat-icon">${x.i}</span><div class="stat-num">${x.n}</div><div class="stat-label">${x.l}</div></div>`).join('');}
 
@@ -4884,13 +4885,59 @@ function renderRadar() {
   `;
 }
 
-if('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js', { scope: '/' })
-      .then(reg => console.log('ServiceWorker registered:', reg.scope))
-      .catch(err => console.log('ServiceWorker registration failed:', err));
-  });
-}
+const _renderStats = renderStats;
+renderStats = function() {
+  if (!document.getElementById('statsRow')) return;
+  return _renderStats.apply(this, arguments);
+};
+
+const _renderRing = renderRing;
+renderRing = function() {
+  if (!document.getElementById('ringWrap')) return;
+  return _renderRing.apply(this, arguments);
+};
+
+const _renderSubjects = renderSubjects;
+renderSubjects = function() {
+  if (!document.getElementById('subjectsList')) return;
+  return _renderSubjects.apply(this, arguments);
+};
+
+const _renderLB = renderLB;
+renderLB = function() {
+  if (!document.getElementById('leaderboard')) return;
+  return _renderLB.apply(this, arguments);
+};
+
+const _renderRevision = renderRevision;
+renderRevision = function() {
+  if (!document.getElementById('revRounds') || !document.getElementById('revGrid')) return;
+  return _renderRevision.apply(this, arguments);
+};
+
+const _renderRevContent = renderRevContent;
+renderRevContent = function() {
+  if (!document.getElementById('revContentPanel')) return;
+  return _renderRevContent.apply(this, arguments);
+};
+
+const _renderNotesTabs = renderNotesTabs;
+renderNotesTabs = function() {
+  if (!document.getElementById('notesTabs')) return;
+  return _renderNotesTabs.apply(this, arguments);
+};
+
+const _renderNotesEditor = renderNotesEditor;
+renderNotesEditor = function() {
+  if (!document.getElementById('notesEditor')) return;
+  return _renderNotesEditor.apply(this, arguments);
+};
+
+const _renderSyllabus = renderSyllabus;
+renderSyllabus = function() {
+  if (!document.getElementById('syllabusContent')) return;
+  return _renderSyllabus.apply(this, arguments);
+};
 
 </script>
 </body>

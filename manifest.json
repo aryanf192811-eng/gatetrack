@@ -1,6 +1,6 @@
 {
-  "name": "GATE 2028 Tracker",
-  "short_name": "GATE 2028",
+  "name": "GATE Tracker",
+  "short_name": "GATE",
   "description": "Progress tracker and revision tool for GATE 2028 CSE aspirants.",
   "start_url": "/",
   "scope": "/",
